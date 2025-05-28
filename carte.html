@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carte interactive - WasteMap Kaolack</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100%; font-family: Arial, sans-serif;
+    }
+    #map {
+      width: 100%; height: 100vh;
+    }
+    .leaflet-control-layers-expanded {
+      max-height: 300px; overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- Leaflet GeometryUtil pour distance à polyligne -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.geometryutil/0.9.3/leaflet.geometryutil.min.js"></script>
+
+<script>
+  // Initialisation carte centrée sur Kaolack
+  const map = L.map('map').setView([14.1466, -16.0726], 13);
+
+  // Fond OpenStreetMap - fond principal
+  const fondOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Fond satellite Esri en couche au-dessus, semi-transparent (50%)
+  const fondSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles © Esri',
+    opacity: 0.5
+  }).addTo(map);
+
+  // Contrôle des couches (exclut les fonds de carte)
+  const couches = {};
+  const controleCouches = L.control.layers(null, null, { collapsed: false }).addTo(map);
+
+  // Fonction chargement GeoJSON en style simple cercles ou polygones/ligne
+  function chargerGeoJSON(url, style, coucheNom) {
+    return fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        const layer = L.geoJSON(data, {
+          pointToLayer: (feature, latlng) => {
+            return L.circleMarker(latlng, {
+              radius: 7,
+              fillColor: style.fillColor || '#3388ff',
+              color: style.color || '#000',
+              weight: 1,
+              opacity: 1,
+              fillOpacity: style.fillOpacity || 0.8
+            });
+          },
+          style: style,
+          onEachFeature: (feature, layer) => {
+            let popup = "<strong>" + coucheNom + "</strong><br/>";
+            for (let key in feature.properties) {
+              if (feature.properties[key] !== null && feature.properties[key] !== "") {
+                popup += `<b>${key}</b>: ${feature.properties[key]}<br/>`;
+              }
+            }
+            layer.bindPopup(popup);
+          }
+        });
+        couches[coucheNom] = layer;
+        layer.addTo(map);
+        controleCouches.addOverlay(layer, coucheNom);
+        return layer;
+      })
+      .catch(err => {
+        console.error("Erreur chargement " + coucheNom + " : ", err);
+      });
+  }
+
+  // Variables globales pour buffer et chemin
+  let bufferLayer = null;
+  let cheminLayer = null;
+
+  // Charger toutes les couches
+  Promise.all([
+    chargerGeoJSON('data/commune.geojson', {
+      color: '#000000',
+      weight: 2,
+      fillOpacity: 0
+    }, 'Commune de Kaolack'),
+
+    chargerGeoJSON('data/observation.geojson', {
+      fillColor: 'red',
+      color: '#800000',
+      fillOpacity: 0.7
+    }, 'Dépôts sauvages'),
+
+    chargerGeoJSON('data/existant_un.geojson', {
+      fillColor: 'blue',
+      color: '#000080',
+      fillOpacity: 0.7
+    }, 'Points de collecte existants'),
+
+    chargerGeoJSON('data/bon_un.geojson', {
+      fillColor: 'green',
+      color: '#006400',
+      fillOpacity: 0.7
+    }, 'Points proposés'),
+
+    chargerGeoJSON('data/circuits.geojson', {
+      color: 'orange',
+      weight: 3,
+      opacity: 0.8
+    }, 'Circuits de collecte'),
+
+  ]).then(() => {
+
+    // Fonction pour calculer distance entre deux L.LatLng
+    function distance(latlng1, latlng2) {
+      return latlng1.distanceTo(latlng2); // en mètres
+    }
+
+    // Trouver point le plus proche dans couche point
+    function findClosestPoint(userLatLng, geojsonLayer) {
+      let minDist = Infinity;
+      let closestLayer = null;
+      geojsonLayer.eachLayer(layer => {
+        const latlng = layer.getLatLng();
+        const dist = distance(userLatLng, latlng);
+        if (dist < minDist) {
+          minDist = dist;
+          closestLayer = layer;
+        }
+      });
+      return { closestLayer, minDist };
+    }
+
+    // Recherche bouton personnalisé (icône loupe)
+    const searchControl = L.control({position: 'topleft'});
+    searchControl.onAdd = function(map) {
+      const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+      container.style.backgroundColor = 'white';
+      container.style.width = '30px';
+      container.style.height = '30px';
+      container.style.cursor = 'pointer';
+      container.style.backgroundImage = "url('https://cdn-icons-png.flaticon.com/512/622/622669.png')";
+      container.style.backgroundSize = "20px 20px";
+      container.style.backgroundRepeat = "no-repeat";
+      container.style.backgroundPosition = "center";
+      container.title = "Rechercher le point le plus proche";
+
+      container.onclick = function() {
+        const userInput = prompt("Tapez un mot clé (exemple: 'point le plus proche'):");
+        if (!userInput) return;
+
+        // On recherche uniquement si utilisateur tape "point le plus proche" (peuvent améliorer)
+        if (userInput.toLowerCase().includes("point le plus proche")) {
+          if (!navigator.geolocation) {
+            alert("Géolocalisation non supportée par votre navigateur.");
+            return;
+          }
+          navigator.geolocation.getCurrentPosition(pos => {
+            const userLatLng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+
+            // Supprimer anciens buffer et chemin si existants
+            if (bufferLayer) {
+              map.removeLayer(bufferLayer);
+              bufferLayer = null;
+            }
+            if (cheminLayer) {
+              map.removeLayer(cheminLayer);
+              cheminLayer = null;
+            }
+
+            // Marker position utilisateur
+            const userMarker = L.marker(userLatLng).addTo(map).bindPopup("Vous êtes ici").openPopup();
+
+            // Recherche point le plus proche dans "Points proposés"
+            const { closestLayer, minDist } = findClosestPoint(userLatLng, couches['Points proposés']);
+
+            if (closestLayer) {
+              closestLayer.openPopup();
+
+              // Centrer carte sur le point trouvé
+              map.setView(closestLayer.getLatLng(), 15);
+
+              // Buffer de 500m en bleu autour du point le plus proche
+              bufferLayer = L.circle(closestLayer.getLatLng(), {
+                radius: 500,
+                color: 'blue',
+                weight: 2,
+                fillColor: 'blue',
+                fillOpacity: 0.2
+              }).addTo(map);
+
+              // Popup personnalisé avec distance
+              closestLayer.bindPopup(
+                `Point de collecte proposé le plus proche<br>Distance : ${Math.round(minDist)} mètres`
+              ).openPopup();
+
+              // Tracer chemin (ligne) entre utilisateur et point le plus proche
+              cheminLayer = L.polyline([userLatLng, closestLayer.getLatLng()], {
+                color: 'blue',
+                weight: 3,
+                opacity: 0.7,
+                dashArray: '5,10'
+              }).addTo(map);
+            } else {
+              alert("Aucun point trouvé dans la couche 'Points proposés'.");
+            }
+
+          }, err => {
+            alert("Géolocalisation refusée ou erreur : " + err.message);
+          });
+        } else {
+          alert("Mot clé non reconnu. Veuillez taper 'point le plus proche'.");
+        }
+      };
+      return container;
+    };
+    searchControl.addTo(map);
+
+  });
+</script>
+
+</body>
+</html>

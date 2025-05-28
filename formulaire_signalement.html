@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Signalement Dépôt Sauvage - WasteMap</title>
+<style>
+  /* Reset basique */
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #6b8ce3 0%, #a0c1f7 100%);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px 40px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 700;
+    color: #334e92;
+    letter-spacing: 1px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
+  }
+
+  input[type="text"],
+  select,
+  textarea,
+  input[type="file"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 2px solid #cbd5e1;
+    font-size: 1rem;
+    font-family: inherit;
+    color: #222;
+    transition: border-color 0.3s ease;
+  }
+
+  input[type="text"]:focus,
+  select:focus,
+  textarea:focus,
+  input[type="file"]:focus {
+    outline: none;
+    border-color: #5068e2;
+    box-shadow: 0 0 6px #5068e2aa;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  button {
+    background: #5068e2;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    width: 100%;
+    cursor: pointer;
+    box-shadow: 0 6px 12px #4250c2aa;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #3e53c0;
+  }
+
+  /* QR code box sous le formulaire */
+  .qr-container {
+    margin-top: 30px;
+    background: #f5f7ff;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 10px #cbd5e1;
+    text-align: center;
+    max-width: 220px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .qr-container h3 {
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: #334e92;
+  }
+
+  /* Taille réduite du QR code */
+  #qrcode canvas {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  /* Bouton de téléchargement QR code */
+  #download-btn {
+    margin-top: 15px;
+    background: #334e92;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 10px;
+    width: auto;
+    box-shadow: 0 4px 10px #223366aa;
+  }
+  #download-btn:hover {
+    background: #2a3a78;
+  }
+
+  /* Responsive */
+  @media (max-width: 540px) {
+    .container {
+      padding: 20px 15px;
+      max-width: 100%;
+    }
+    .qr-container {
+      max-width: 180px;
+      padding: 15px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h2>📍 Signaler un dépôt sauvage</h2>
+  <form action="traitement.php" method="POST" enctype="multipart/form-data">
+
+    <label for="nom">Votre nom</label>
+    <input type="text" id="nom" name="nom" placeholder="Ex: Mamadou Ndiaye" required />
+
+    <label for="latitude">Latitude</label>
+    <input type="text" id="latitude" name="latitude" placeholder="Ex: 14.6687" required />
+
+    <label for="longitude">Longitude</label>
+    <input type="text" id="longitude" name="longitude" placeholder="Ex: -17.4372" required />
+
+    <label for="type_dechet">Type de déchet</label>
+    <select id="type_dechet" name="type_dechet" required>
+      <option value="" disabled selected>-- Choisissez un type --</option>
+      <option value="plastique">Plastique</option>
+      <option value="organique">Organique</option>
+      <option value="métallique">Métallique</option>
+      <option value="verre">Verre</option>
+      <option value="divers">Divers</option>
+    </select>
+
+    <label for="photo">Photo du dépôt</label>
+    <input type="file" id="photo" name="photo" accept="image/*" required />
+
+    <label for="description">Description (optionnelle)</label>
+    <textarea id="description" name="description" placeholder="Détails supplémentaires..."></textarea>
+
+    <button type="submit">Envoyer le signalement</button>
+  </form>
+
+  <div class="qr-container">
+    <h3>📱 Scannez pour accéder au formulaire</h3>
+    <div id="qrcode"></div>
+    <button id="download-btn">Télécharger le QR code</button>
+  </div>
+
+</div>
+
+<!-- Bibliothèque QRCode.js -->
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+  const urlFormulaire = window.location.href;
+
+  const qrcode = new QRCode(document.getElementById("qrcode"), {
+    text: urlFormulaire,
+    width: 120,
+    height: 120,
+    colorDark: "#334e92",
+    colorLight: "#f5f7ff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  document.getElementById("download-btn").addEventListener("click", () => {
+    // Le canvas du QR code est généré dans #qrcode > canvas
+    const canvas = document.querySelector("#qrcode canvas");
+    if (!canvas) {
+      alert("QR code non généré.");
+      return;
+    }
+    // Convertir canvas en data URL PNG
+    const dataURL = canvas.toDataURL("image/png");
+    // Créer un lien temporaire pour le téléchargement
+    const a = document.createElement("a");
+    a.href = dataURL;
+    a.download = "wastemap_qrcode.png";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+</script>
+
+</body>
+</html>

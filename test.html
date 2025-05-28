@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WasteMap Kaolack</title>
+  <meta name="description" content="Plateforme participative de gestion des déchets à Kaolack via une carte interactive et des outils SIG." />
+  
+  <!-- Favicon correctement intégré -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    header {
+      background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/ngane.jpg');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 100px 20px 60px 20px;
+      text-align: center;
+      animation: zoom 20s infinite alternate;
+    }
+
+    @keyframes zoom {
+      from {
+        background-size: 100%;
+      }
+      to {
+        background-size: 110%;
+      }
+    }
+
+    header h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 1.3em;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    nav {
+      background-color: #2e7d32;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .content {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #1b5e20;
+      color: white;
+      font-size: 14px;
+    }
+
+    footer a {
+      color: #a5d6a7;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Bienvenue sur WasteMap Kaolack</h1>
+    <p>
+      Une plateforme de gestion participative des déchets à Kaolack : explorez la carte interactive, consultez les statistiques, et signalez les dépôts sauvages.
+    </p>
+  </header>
+
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="carte.html">Carte interactive</a>
+    <a href="statistiques.html">Statistiques</a>
+    <a href="predictions.html">Prédictions</a>
+    <a href="formulaire_signalement.html">Signalement</a>
+    <a href="contact.html">Contact</a>
+  </nav>
+
+  <div class="content">
+    <h2>À propos du projet</h2>
+    <p>
+      WasteMap Kaolack est une initiative de géomatique citoyenne visant à cartographier les dépôts sauvages, optimiser les circuits de collecte, et encourager la participation citoyenne à travers une plateforme Web SIG moderne.
+    </p>
+  </div>
+
+  <footer>
+    &copy; 2025 WasteMap Kaolack | Développé par un groupe d'étudiants en Licence 3<br>
+    <a href="https://facebook.com" target="_blank">Facebook</a> |
+    <a href="https://twitter.com" target="_blank">Twitter</a> |
+    <a href="mailto:contact@wastemapkaolack.sn">Email</a>
+  </footer>
+
+</body>
+</html>
