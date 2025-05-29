@@ -1,185 +1,142 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WasteMap Kaolack</title>
-  <meta name="description" content="Plateforme participative de gestion des déchets à Kaolack via une carte interactive et des outils SIG." />
-  <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      height: 100%;
-      overflow-x: hidden;
-    }
+    <meta charset="UTF-8">
+    <title>WasteMap Kaolack</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Styles généraux */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
 
-    header {
-      background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/ngane.JPG');
-      background-size: cover;
-      background-position: center;
-      color: white;
-      text-align: center;
-      height: 300px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      animation: zoom 20s infinite alternate;
-    }
+        /* Section À propos avec fond défilant */
+        #a-propos {
+            position: relative;
+            height: 100vh;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 1;
+            overflow: hidden;
+        }
 
-    @keyframes zoom {
-      from {
-        background-size: 100%;
-      }
-      to {
-        background-size: 110%;
-      }
-    }
+        #a-propos::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.6;
+            z-index: -1;
+            transition: background-image 1s ease-in-out;
+        }
 
-    header h1 {
-      font-size: 3em;
-      margin-bottom: 10px;
-    }
+        .a-propos-content {
+            position: relative;
+            z-index: 2;
+            padding: 2rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
 
-    header p {
-      font-size: 1.3em;
-      max-width: 800px;
-      margin: auto;
-    }
+        h1 {
+            font-size: 3rem;
+        }
 
-    nav {
-      background-color: #2e7d32;
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      padding: 15px;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
 
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 16px;
-    }
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
 
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    /* Section "À propos du projet" avec diaporama en arrière-plan */
-    .content {
-      position: relative;
-      padding: 40px 20px;
-      max-width: 1000px;
-      margin: auto;
-      text-align: center;
-      color: white;
-      overflow: hidden;
-      z-index: 1;
-      background-color: rgba(0,0,0,0.5); /* semi-transparent pour lisibilité */
-    }
-
-    /* Conteneur du slideshow */
-    .slideshow {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      z-index: 0;
-      overflow: hidden;
-      border-radius: 10px;
-    }
-
-    .slide {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      opacity: 0;
-      transition: opacity 1.5s ease-in-out;
-    }
-
-    .slide.active {
-      opacity: 1;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      background-color: #1b5e20;
-      color: white;
-      font-size: 14px;
-    }
-
-    footer a {
-      color: #a5d6a7;
-      text-decoration: none;
-      margin: 0 10px;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-      color: #ffffff;
-    }
-  </style>
+            p {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- En-tête avec image et titre -->
-  <header>
-    <h1>Bienvenue sur WasteMap Kaolack</h1>
-    <p>
-      Une plateforme de gestion participative des déchets à Kaolack : explorez la carte interactive, consultez les statistiques, et signalez les dépôts sauvages.
-    </p>
-  </header>
+    <!-- Section À propos du projet -->
+    <section id="a-propos">
+        <div class="a-propos-content">
+            <h1>À propos du projet</h1>
+            <p>WasteMap est une plateforme géospatiale pour la gestion des déchets à Kaolack. Elle permet de cartographier les points de collecte, les dépôts sauvages, et d'analyser l'efficacité du système de collecte à l'aide des données terrain et satellites.</p>
+        </div>
+    </section>
 
-  <!-- Menu de navigation -->
-  <nav>
-    <a href="index.html">Accueil</a>
-    <a href="carte.html">Carte interactive</a>
-    <a href="statistiques.html">Statistiques</a>
-    <a href="predictions.html">Prédictions</a>
-    <a href="formulaire_signalement.html">Signalement</a>
-    <a href="contact.html">Contact</a>
-  </nav>
+    <!-- Script du diaporama -->
+    <script>
+        const images = [
+            'img/slideshow/slide1.JPG',
+            'img/slideshow/slide2.JPG',
+            'img/slideshow/slide3.JPG'
+        ];
+        let index = 0;
+        const section = document.querySelector("#a-propos");
 
-  <!-- Contenu principal avec slideshow en arrière-plan -->
-  <div class="content">
-    <div class="slideshow">
-      <div class="slide active" style="background-image: url('img/slideshow/slide1.JPG');"></div>
-      <div class="slide" style="background-image: url('img/slideshow/slide2.JPG');"></div>
-      <div class="slide" style="background-image: url('img/slideshow/slide3.JPG');"></div>
-    </div>
-    <h2>À propos du projet</h2>
-    <p>
-      WasteMap Kaolack est une initiative de géomatique citoyenne visant à cartographier les dépôts sauvages, optimiser les circuits de collecte, et encourager la participation citoyenne à travers une plateforme Web SIG moderne.
-    </p>
-  </div>
+        function changerFond() {
+            section.style.setProperty('--bg-image', `url('${images[index]}')`);
+            section.style.backgroundImage = `url('${images[index]}')`;
+            section.style.setProperty('--current-index', index);
+            section.querySelector("::before")
+            section.style.setProperty('--image', `url('${images[index]}')`);
+            section.style.setProperty('--opacity', 0.6);
+            section.style.setProperty('--transition', 'background-image 1s ease-in-out');
 
-  <!-- Pied de page -->
-  <footer>
-    &copy; 2025 WasteMap Kaolack | Développé par un groupe d'étudiants en Licence 3<br>
-    <a href="https://facebook.com" target="_blank">Facebook</a> |
-    <a href="https://twitter.com" target="_blank">Twitter</a> |
-    <a href="mailto:contact@wastemapkaolack.sn">Email</a>
-  </footer>
+            section.style.setProperty('--background-image', `url('${images[index]}')`);
+            section.style.setProperty('--background-size', 'cover');
+            section.style.setProperty('--background-position', 'center');
+            section.style.setProperty('--background-repeat', 'no-repeat');
 
-  <script>
-    // Script pour changer les slides toutes les 5 secondes
-    const slides = document.querySelectorAll('.slide');
-    let currentIndex = 0;
+            section.style.setProperty('--z-index', '-1');
 
-    setInterval(() => {
-      slides[currentIndex].classList.remove('active');
-      currentIndex = (currentIndex + 1) % slides.length;
-      slides[currentIndex].classList.add('active');
-    }, 5000);
-  </script>
+            section.style.setProperty('--before-content', '');
+            section.style.setProperty('--before-opacity', 0.6);
+            section.style.setProperty('--before-z-index', -1);
+
+            section.style.setProperty('--after-transition', 'background-image 1s ease-in-out');
+
+            section.style.setProperty('--transition-duration', '1s');
+            section.style.setProperty('--transition-timing-function', 'ease-in-out');
+
+            section.style.setProperty('--animation', 'fade 1s ease-in-out');
+            section.style.setProperty('--animation-fill-mode', 'forwards');
+
+            section.querySelector("::before")
+            .style.backgroundImage = `url('${images[index]}')`;
+
+            index = (index + 1) % images.length;
+        }
+
+        // Méthode alternative si ::before ne peut pas être manipulé via JS (fallback)
+        function changerFondFallback() {
+            document.querySelector('#a-propos').style.setProperty('--bg', `url(${images[index]})`);
+            document.querySelector('#a-propos').style.setProperty('background-image', `url(${images[index]})`);
+            index = (index + 1) % images.length;
+        }
+
+        setInterval(() => {
+            document.querySelector("#a-propos").style.setProperty("--bg-image", `url('${images[index]}')`);
+            document.querySelector("#a-propos").style.setProperty("background-image", `url('${images[index]}')`);
+            document.querySelector("#a-propos").style.backgroundImage = `url('${images[index]}')`;
+            index = (index + 1) % images.length;
+        }, 5000);
+    </script>
 
 </body>
 </html>
 
+  
