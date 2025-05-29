@@ -1,140 +1,151 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>WasteMap Kaolack</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* Styles généraux */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WasteMap Kaolack</title>
+  <meta name="description" content="Plateforme participative de gestion des déchets à Kaolack via une carte interactive et des outils SIG." />
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
 
-        /* Section À propos avec fond défilant */
-        #a-propos {
-            position: relative;
-            height: 100vh;
-            color: white;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            z-index: 1;
-            overflow: hidden;
-        }
+    header {
+      background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/ngane.JPG'); /* vérifie la casse exacte ici */
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      animation: zoom 20s infinite alternate;
+    }
 
-        #a-propos::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.6;
-            z-index: -1;
-            transition: background-image 1s ease-in-out;
-        }
+    @keyframes zoom {
+      from {
+        background-size: 100%;
+      }
+      to {
+        background-size: 110%;
+      }
+    }
 
-        .a-propos-content {
-            position: relative;
-            z-index: 2;
-            padding: 2rem;
-            background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 1rem;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+    header svg {
+      margin-bottom: 15px;
+    }
 
-        h1 {
-            font-size: 3rem;
-        }
+    header h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+    }
 
-        p {
-            font-size: 1.2rem;
-            line-height: 1.6;
-        }
+    header p {
+      font-size: 1.3em;
+      max-width: 800px;
+      margin: auto;
+    }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
+    nav {
+      background-color: #2e7d32;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
 
-            p {
-                font-size: 1rem;
-            }
-        }
-    </style>
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    .content {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: auto;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #1b5e20;
+      color: white;
+      font-size: 14px;
+    }
+
+    footer a {
+      color: #a5d6a7;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+      color: #ffffff;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Section À propos du projet -->
-    <section id="a-propos">
-        <div class="a-propos-content">
-            <h1>À propos du projet</h1>
-            <p>WasteMap est une plateforme géospatiale pour la gestion des déchets à Kaolack. Elle permet de cartographier les points de collecte, les dépôts sauvages, et d'analyser l'efficacité du système de collecte à l'aide des données terrain et satellites.</p>
-        </div>
-    </section>
+  <!-- En-tête avec logo SVG, image et titre -->
+  <header>
+    <!-- Logo SVG -->
+    <svg width="220" height="60" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo WasteMap Kaolack" >
+      <rect x="5" y="5" width="50" height="50" rx="10" ry="10" fill="#2e7d32" />
+      <path d="M20 15 L35 15 L40 30 L35 45 L20 45 L15 30 Z" fill="#a5d6a7" stroke="#ffffff" stroke-width="2"/>
+      <line x1="25" y1="25" x2="30" y2="35" stroke="#ffffff" stroke-width="2"/>
+      <line x1="30" y1="25" x2="25" y2="35" stroke="#ffffff" stroke-width="2"/>
+      <text x="65" y="38" fill="#2e7d32" font-family="Segoe UI, Tahoma, Geneva, Verdana, sans-serif" font-weight="700" font-size="24">
+        WasteMap Kaolack
+      </text>
+    </svg>
 
-    <!-- Script du diaporama -->
-    <script>
-        const images = [
-            'img/slideshow/slide1.JPG',
-            'img/slideshow/slide2.JPG',
-            'img/slideshow/slide3.JPG'
-        ];
-        let index = 0;
-        const section = document.querySelector("#a-propos");
+    <h1>Bienvenue sur WasteMap Kaolack</h1>
+    <p>
+      Une plateforme de gestion participative des déchets à Kaolack : explorez la carte interactive, consultez les statistiques, et signalez les dépôts sauvages.
+    </p>
+  </header>
 
-        function changerFond() {
-            section.style.setProperty('--bg-image', `url('${images[index]}')`);
-            section.style.backgroundImage = `url('${images[index]}')`;
-            section.style.setProperty('--current-index', index);
-            section.querySelector("::before")
-            section.style.setProperty('--image', `url('${images[index]}')`);
-            section.style.setProperty('--opacity', 0.6);
-            section.style.setProperty('--transition', 'background-image 1s ease-in-out');
+  <!-- Menu de navigation -->
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="carte.html">Carte interactive</a>
+    <a href="statistiques.html">Statistiques</a>
+    <a href="predictions.html">Prédictions</a>
+    <a href="formulaire_signalement.html">Signalement</a>
+    <a href="contact.html">Contact</a>
+  </nav>
 
-            section.style.setProperty('--background-image', `url('${images[index]}')`);
-            section.style.setProperty('--background-size', 'cover');
-            section.style.setProperty('--background-position', 'center');
-            section.style.setProperty('--background-repeat', 'no-repeat');
+  <!-- Contenu principal -->
+  <div class="content">
+    <h2>À propos du projet</h2>
+    <p>
+      WasteMap Kaolack est une initiative de géomatique citoyenne visant à cartographier les dépôts sauvages, optimiser les circuits de collecte, et encourager la participation citoyenne à travers une plateforme Web SIG moderne.
+    </p>
+  </div>
 
-            section.style.setProperty('--z-index', '-1');
-
-            section.style.setProperty('--before-content', '');
-            section.style.setProperty('--before-opacity', 0.6);
-            section.style.setProperty('--before-z-index', -1);
-
-            section.style.setProperty('--after-transition', 'background-image 1s ease-in-out');
-
-            section.style.setProperty('--transition-duration', '1s');
-            section.style.setProperty('--transition-timing-function', 'ease-in-out');
-
-            section.style.setProperty('--animation', 'fade 1s ease-in-out');
-            section.style.setProperty('--animation-fill-mode', 'forwards');
-
-            section.querySelector("::before")
-            .style.backgroundImage = `url('${images[index]}')`;
-
-            index = (index + 1) % images.length;
-        }
-
-        // Méthode alternative si ::before ne peut pas être manipulé via JS (fallback)
-        function changerFondFallback() {
-            document.querySelector('#a-propos').style.setProperty('--bg', `url(${images[index]})`);
-            document.querySelector('#a-propos').style.setProperty('background-image', `url(${images[index]})`);
-            index = (index + 1) % images.length;
-        }
-
-        setInterval(() => {
-            document.querySelector("#a-propos").style.setProperty("--bg-image", `url('${images[index]}')`);
-            document.querySelector("#a-propos").style.setProperty("background-image", `url('${images[index]}')`);
-            document.querySelector("#a-propos").style.backgroundImage = `url('${images[index]}')`;
-            index = (index + 1) % images.length;
-        }, 5000);
-    </script>
+  <!-- Pied de page -->
+  <footer>
+    &copy; 2025 WasteMap Kaolack | Développé par un groupe d'étudiants en Licence 3<br>
+    <a href="https://facebook.com" target="_blank">Facebook</a> |
+    <a href="https://twitter.com" target="_blank">Twitter</a> |
+    <a href="mailto:contact@wastemapkaolack.sn">Email</a>
+  </footer>
 
 </body>
 </html>
